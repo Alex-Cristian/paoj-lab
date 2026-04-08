@@ -14,14 +14,13 @@ public class Main {
         for (int i = 0; i < numarAngajati; i++) {
             angajati[i] = Angajat.citeste(scanner);
         }
-        // cerinte: sorteaza in functie de optiune
-        Comparator<Angajat> comparator = switch (optiune) {
-            case "by_name" -> (Angajat a1, Angajat a2) -> a1.getNume().compareTo(a2.getNume());
-            case "by_salary" -> (Angajat a1, Angajat a2) -> Double.compare(a1.getSalariu(), a2.getSalariu());
-            case "by_salary_desc" -> (Angajat a1, Angajat a2) -> Double.compare(a2.getSalariu(), a1.getSalariu());
-            default -> (a1, a2) -> 0; // nu sortam
-        };
-        Arrays.sort(angajati, comparator);
+        switch (optiune) {
+            case "by_salary" -> Arrays.sort(angajati);
+            case "by_name" -> Arrays.sort(angajati, Comparator.comparing(Angajat::getNume));
+            case "by_salary_desc" -> Arrays.sort(angajati, Comparator.comparingDouble(Angajat::getSalariu).reversed());
+            default -> {
+            }
+        }
         for (Angajat angajat : angajati) {
             System.out.println(angajat);
         }
