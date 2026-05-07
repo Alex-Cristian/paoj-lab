@@ -1,14 +1,12 @@
 [
     {
         "type": "java",
-        "name": "Launch Main",
+        "name": "Run Audi Dealership",
         "request": "launch",
-        "srcPaths": [
-            "src"
-        ],
-//        "mainClass": "com.pao.laboratory06.Test",
-        "classpath": [
-            "lib/java-diff-utils-4.15.jar"
+        "mainClass": "com.pao.proiect.audidealership.Main",
+        "classPaths": [
+            "${workspaceFolder}/output",
+            "${workspaceFolder}/lib/java-diff-utils-4.15.jar"
         ]
     }
 ]
