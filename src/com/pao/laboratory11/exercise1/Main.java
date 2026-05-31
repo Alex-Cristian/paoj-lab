@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class Main {
     private static final Set<String> HIGH_RISK_COUNTRIES =
@@ -27,8 +28,19 @@ public class Main {
         CHANNEL_SCORE.put("ATM", 0);
     }
 
+    private static final int FLAG_THRESHOLD = 60;
+
     private static final Comparator<Transaction> BY_RISK_DESC_THEN_ID_ASC =
             Comparator.comparingInt(Main::riskScore).reversed().thenComparingInt(t -> t.id);
+
+    private static final Predicate<Transaction> amountOverThreshold = tx -> tx.amount >= 1000.0;
+    private static final Predicate<Transaction> countryInRisk = tx -> HIGH_RISK_COUNTRIES.contains(tx.country);
+    private static final Predicate<Transaction> channelSuspicious =
+            tx -> "WEB".equals(tx.channel) || "APP".equals(tx.channel) || "CRYPTO".equals(tx.channel);
+    private static final Predicate<Transaction> flaggedByComposedRules =
+            amountOverThreshold.or(countryInRisk).or(channelSuspicious);
+    private static final Predicate<Transaction> flaggedRule =
+            flaggedByComposedRules.and(tx -> riskScore(tx) >= FLAG_THRESHOLD);
 
     public static void main(String[] args) {
         try {
@@ -178,11 +190,11 @@ public class Main {
     }
 
     private static boolean isFlagged(Transaction tx) {
-        return riskScore(tx) >= 60;
+        return flaggedRule.test(tx);
     }
 
     private static String verdict(int score) {
-        return score >= 60 ? "FLAG" : "ALLOW";
+        return score >= FLAG_THRESHOLD ? "FLAG" : "ALLOW";
     }
 
     private static String formatRiskLine(Transaction tx) {
@@ -190,19 +202,39 @@ public class Main {
         return "[" + tx.id + "] " + verdict(score) + " score=" + score;
     }
 
-    private static class Transaction {
+    public static class Transaction {
         private final int id;
         private final double amount;
         private final String date;
         private final String country;
         private final String channel;
 
-        private Transaction(int id, double amount, String date, String country, String channel) {
+        public Transaction(int id, double amount, String date, String country, String channel) {
             this.id = id;
             this.amount = amount;
             this.date = date;
             this.country = country;
             this.channel = channel;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public String getChannel() {
+            return channel;
         }
     }
 }

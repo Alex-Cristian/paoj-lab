@@ -1,14 +1,16 @@
 package com.pao.laboratory11.exercise2;
 
+import com.pao.laboratory11.exercise1.Main.Transaction;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
@@ -28,7 +30,7 @@ public class Main {
         }
 
         int n = Integer.parseInt(first);
-        List<Tx> txs = new ArrayList<>();
+        List<AccountTransaction> txs = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             String line = nextNonEmpty(br);
             if (line == null) {
@@ -36,13 +38,13 @@ public class Main {
             }
 
             String[] p = line.split("\\s+");
-            txs.add(new Tx(
+            Transaction tx = new Transaction(
                     Integer.parseInt(p[0]),
                     Double.parseDouble(p[1]),
                     p[2],
                     p[3],
-                    p[4],
-                    p[5]));
+                    p[4]);
+            txs.add(new AccountTransaction(tx, p[5]));
         }
 
         int q = Integer.parseInt(nextNonEmpty(br));
@@ -58,42 +60,40 @@ public class Main {
             switch (op) {
                 case "REPORT_MONTH": {
                     String month = p[1];
-                    double total = 0.0;
-                    int count = 0;
-                    for (Tx tx : txs) {
-                        if (tx.date.startsWith(month)) {
-                            total += tx.amount;
-                            count++;
-                        }
-                    }
+                    List<AccountTransaction> matching = txs.stream()
+                            .filter(tx -> tx.transaction.getDate().startsWith(month))
+                            .collect(Collectors.toList());
+                    double total = matching.stream()
+                            .mapToDouble(tx -> tx.transaction.getAmount())
+                            .sum();
+                    long count = matching.size();
                     System.out.printf(Locale.US, "MONTH %s total=%.2f count=%d%n", month, total, count);
                     break;
                 }
 
                 case "REPORT_ACCOUNT": {
                     String account = p[1];
-                    double total = 0.0;
-                    int count = 0;
-                    for (Tx tx : txs) {
-                        if (tx.account.equals(account)) {
-                            total += tx.amount;
-                            count++;
-                        }
-                    }
+                    List<AccountTransaction> matching = txs.stream()
+                            .filter(tx -> tx.accountId.equals(account))
+                            .collect(Collectors.toList());
+                    double total = matching.stream()
+                            .mapToDouble(tx -> tx.transaction.getAmount())
+                            .sum();
+                    long count = matching.size();
                     System.out.printf(Locale.US, "ACCOUNT %s total=%.2f count=%d%n", account, total, count);
                     break;
                 }
 
                 case "TOP_CHANNELS": {
                     int k = Integer.parseInt(p[1]);
-                    Map<String, Integer> counts = new HashMap<>();
-                    for (Tx tx : txs) {
-                        counts.put(tx.channel, counts.getOrDefault(tx.channel, 0) + 1);
-                    }
+                    Map<String, Long> counts = txs.stream()
+                            .collect(Collectors.groupingBy(
+                                    tx -> tx.transaction.getChannel(),
+                                    Collectors.counting()));
 
-                    List<Map.Entry<String, Integer>> entries = new ArrayList<>(counts.entrySet());
+                    List<Map.Entry<String, Long>> entries = new ArrayList<>(counts.entrySet());
                     entries.sort(Comparator
-                            .comparingInt((Map.Entry<String, Integer> e) -> e.getValue()).reversed()
+                            .comparingLong((Map.Entry<String, Long> e) -> e.getValue()).reversed()
                             .thenComparing(Map.Entry::getKey));
 
                     if (entries.isEmpty()) {
@@ -103,7 +103,7 @@ public class Main {
 
                     int limit = Math.min(k, entries.size());
                     for (int idx = 0; idx < limit; idx++) {
-                        Map.Entry<String, Integer> e = entries.get(idx);
+                        Map.Entry<String, Long> e = entries.get(idx);
                         System.out.println(e.getKey() + " " + e.getValue());
                     }
                     break;
@@ -126,21 +126,13 @@ public class Main {
         return null;
     }
 
-    private static final class Tx {
-        private final int id;
-        private final double amount;
-        private final String date;
-        private final String country;
-        private final String channel;
-        private final String account;
+    private static final class AccountTransaction {
+        private final Transaction transaction;
+        private final String accountId;
 
-        private Tx(int id, double amount, String date, String country, String channel, String account) {
-            this.id = id;
-            this.amount = amount;
-            this.date = date;
-            this.country = country;
-            this.channel = channel;
-            this.account = account;
+        private AccountTransaction(Transaction transaction, String accountId) {
+            this.transaction = transaction;
+            this.accountId = accountId;
         }
     }
 }
