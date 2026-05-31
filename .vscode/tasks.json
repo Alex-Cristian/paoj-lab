@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Audi Dealership",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-cp",
+                "${workspaceFolder}/lib/*",
+                "-sourcepath",
+                "${workspaceFolder}/src",
+                "-d",
+                "${workspaceFolder}/output",
+                "${workspaceFolder}/src/com/pao/proiect/audidealership/Main.java",
+                "${workspaceFolder}/src/com/pao/proiect/audidealership/Etapa2JdbcDemo.java"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$javac"
+        }
+    ]
+}

@@ -23,6 +23,7 @@ public class CustomerService {
     }
 
     public void addCustomer(Customer customer) {
+        AuditService.getInstance().logAction("inregistreaza_client");
         validateCustomer(customer);
         if (!customers.add(customer)) {
             throw new IllegalArgumentException("Clientul cu ID-ul " + customer.getId() + " exista deja.");
@@ -30,11 +31,13 @@ public class CustomerService {
     }
 
     public void removeCustomerById(String id) {
+        AuditService.getInstance().logAction("sterge_client");
         Customer customer = findCustomerById(id);
         customers.remove(customer);
     }
 
     public Customer findCustomerById(String id) {
+        AuditService.getInstance().logAction("cauta_client_dupa_id");
         return customers.stream()
                 .filter(customer -> customer.getId().equals(normalizeId(id)))
                 .findFirst()
@@ -42,6 +45,7 @@ public class CustomerService {
     }
 
     public List<Customer> findCustomersByName(String name) {
+        AuditService.getInstance().logAction("cauta_clienti_dupa_nume");
         String query = normalizeName(name);
         return customers.stream()
                 .filter(customer -> customer.getFullName().toLowerCase(Locale.ROOT).contains(query))
@@ -49,6 +53,7 @@ public class CustomerService {
     }
 
     public List<Customer> listAllCustomers() {
+        AuditService.getInstance().logAction("listeaza_toti_clientii");
         return new ArrayList<>(customers);
     }
 

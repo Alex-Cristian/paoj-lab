@@ -1,14 +1,57 @@
-[
-    {
-        "type": "java",
-        "name": "Launch Main",
-        "request": "launch",
-        "srcPaths": [
-            "src"
-        ],
-//        "mainClass": "com.pao.laboratory06.Test",
-        "classpath": [
-            "lib/java-diff-utils-4.15.jar"
-        ]
-    }
-]
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Audi Dealership",
+            "request": "launch",
+            "mainClass": "com.pao.proiect.audidealership.Main",
+            "preLaunchTask": "Build Audi Dealership",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED",
+            "sourcePaths": [
+                "${workspaceFolder}/src"
+            ],
+            "classPaths": [
+                "${workspaceFolder}/output",
+                "${workspaceFolder}/resources",
+                "${workspaceFolder}/lib/java-diff-utils-4.15.jar",
+                "${workspaceFolder}/lib/sqlite-jdbc-3.53.1.0.jar"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Launch Etapa II JDBC Demo",
+            "request": "launch",
+            "mainClass": "com.pao.proiect.audidealership.Etapa2JdbcDemo",
+            "preLaunchTask": "Build Audi Dealership",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED",
+            "sourcePaths": [
+                "${workspaceFolder}/src"
+            ],
+            "classPaths": [
+                "${workspaceFolder}/output",
+                "${workspaceFolder}/resources",
+                "${workspaceFolder}/lib/java-diff-utils-4.15.jar",
+                "${workspaceFolder}/lib/sqlite-jdbc-3.53.1.0.jar"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Verify Audi Database",
+            "request": "launch",
+            "mainClass": "com.pao.proiect.audidealership.Etapa2JdbcDemo",
+            "args": "read",
+            "preLaunchTask": "Build Audi Dealership",
+            "vmArgs": "--enable-native-access=ALL-UNNAMED",
+            "sourcePaths": [
+                "${workspaceFolder}/src"
+            ],
+            "classPaths": [
+                "${workspaceFolder}/output",
+                "${workspaceFolder}/resources",
+                "${workspaceFolder}/lib/java-diff-utils-4.15.jar",
+                "${workspaceFolder}/lib/sqlite-jdbc-3.53.1.0.jar"
+            ]
+        }
+    ]
+}

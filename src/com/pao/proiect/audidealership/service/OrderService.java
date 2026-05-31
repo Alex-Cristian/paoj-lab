@@ -30,6 +30,7 @@ public class OrderService {
     }
 
     public Order createOrder(Customer customer, AudiCar car, SalesAgent agent) {
+        AuditService.getInstance().logAction("creeaza_comanda");
         validateOrderInput(customer, car, agent);
         if (!car.isAvailable()) {
             throw new VehicleAlreadySoldException("Masina cu VIN-ul " + car.getVin() + " nu mai este disponibila.");
@@ -44,6 +45,7 @@ public class OrderService {
     }
 
     public void completeOrder(String orderId) {
+        AuditService.getInstance().logAction("finalizeaza_vanzare");
         Order order = findOrderById(orderId);
         if (order.isCompleted()) {
             throw new IllegalStateException("Comanda " + orderId + " este deja finalizata.");
@@ -54,11 +56,13 @@ public class OrderService {
     }
 
     public List<Order> listOrdersByCustomer(String customerId) {
+        AuditService.getInstance().logAction("listeaza_comenzi_client");
         validateText(customerId, "ID-ul clientului nu poate fi gol.");
         return new ArrayList<>(ordersByCustomerId.getOrDefault(customerId.trim(), List.of()));
     }
 
     public List<Order> listAllOrders() {
+        AuditService.getInstance().logAction("listeaza_toate_comenzile");
         return new ArrayList<>(orders);
     }
 

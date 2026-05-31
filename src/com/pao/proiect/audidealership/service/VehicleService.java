@@ -25,6 +25,7 @@ public class VehicleService {
     }
 
     public void addVehicle(AudiCar car) {
+        AuditService.getInstance().logAction("adauga_masina");
         validateCar(car);
         String vin = car.getVin().getValue();
         if (vehiclesByVin.containsKey(vin)) {
@@ -35,12 +36,14 @@ public class VehicleService {
     }
 
     public void removeVehicleByVin(String vin) {
+        AuditService.getInstance().logAction("sterge_masina");
         AudiCar car = findVehicleByVin(vin);
         inventory.remove(car);
         vehiclesByVin.remove(normalizeVin(vin));
     }
 
     public AudiCar findVehicleByVin(String vin) {
+        AuditService.getInstance().logAction("cauta_masina_dupa_vin");
         AudiCar car = vehiclesByVin.get(normalizeVin(vin));
         if (car == null) {
             throw new VehicleNotFoundException("Nu exista nicio masina cu VIN-ul " + vin + ".");
@@ -49,22 +52,26 @@ public class VehicleService {
     }
 
     public List<AudiCar> listAllVehicles() {
+        AuditService.getInstance().logAction("listeaza_toate_masinile");
         return new ArrayList<>(inventory);
     }
 
     public List<AudiCar> listAvailableVehicles() {
+        AuditService.getInstance().logAction("listeaza_masini_disponibile");
         return inventory.stream()
                 .filter(AudiCar::isAvailable)
                 .toList();
     }
 
     public List<AudiCar> listVehiclesSortedByPrice() {
+        AuditService.getInstance().logAction("listeaza_masini_sortate_dupa_pret");
         return inventory.stream()
                 .sorted(Comparator.comparingDouble(AudiCar::getPrice))
                 .toList();
     }
 
     public void markVehicleAsSold(String vin) {
+        AuditService.getInstance().logAction("marcheaza_masina_vanduta");
         AudiCar car = findVehicleByVin(vin);
         if (!car.isAvailable()) {
             throw new VehicleAlreadySoldException("Masina cu VIN-ul " + vin + " este deja vanduta.");

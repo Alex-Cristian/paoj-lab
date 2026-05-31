@@ -23,6 +23,7 @@ public class TestDriveService {
     }
 
     public TestDrive scheduleTestDrive(Customer customer, AudiCar car, LocalDateTime dateTime) {
+        AuditService.getInstance().logAction("programeaza_test_drive");
         if (Objects.isNull(customer) || Objects.isNull(car) || Objects.isNull(dateTime)) {
             throw new IllegalArgumentException("Clientul, masina si data sunt obligatorii.");
         }
@@ -36,6 +37,7 @@ public class TestDriveService {
     }
 
     public List<TestDrive> listTestDrivesByCustomer(String customerId) {
+        AuditService.getInstance().logAction("listeaza_test_driveuri_client");
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalArgumentException("ID-ul clientului nu poate fi gol.");
         }
@@ -46,6 +48,7 @@ public class TestDriveService {
     }
 
     public List<TestDrive> listAllTestDrives() {
+        AuditService.getInstance().logAction("listeaza_toate_test_driveurile");
         return new ArrayList<>(testDrives);
     }
 }

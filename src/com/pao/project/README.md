@@ -2,7 +2,8 @@
 
 ## Descriere
 
-Acest proiect implementeaza Etapa I pentru o aplicatie Java OOP de gestiune a unui dealership auto Audi. Sistemul functioneaza exclusiv in memorie, fara baza de date, fara fisiere de persistenta, fara GUI si fara framework-uri externe.
+Acest proiect implementeaza Etapele I si II pentru o aplicatie Java OOP de gestiune a unui dealership auto Audi.
+Etapa I contine modelarea OOP si serviciile in memorie, iar Etapa II adauga persistenta JDBC, repository-uri, tranzactii si audit CSV.
 
 Pachetul de baza folosit in implementare este:
 
@@ -53,7 +54,12 @@ src/com/pao/proiect/audidealership/
   Main.java
   model/
   service/
+  repository/
+  util/
   exception/
+resources/
+  db.properties
+schema.sql
 ```
 
 ## Elemente OOP implementate
@@ -86,3 +92,18 @@ Clasa `Main` demonstreaza complet toate actiunile de mai sus:
 - creeaza si finalizeaza comenzi
 - programeaza test drive-uri
 - trateaza exceptiile custom prin `try/catch`
+- scrie auditul actiunilor in `audit.csv`
+
+## Etapa II - Persistenta JDBC, tranzactii si audit
+
+Fisiere si clase adaugate:
+
+- `schema.sql` defineste tabelele `customers`, `vehicles`, `sales_agents`, `orders`, `test_drives`, cu chei primare si chei externe.
+- `resources/db.properties` contine configuratia conexiunii JDBC, fara credentiale hardcodate in Java.
+- `DatabaseConnection` este Singleton si citeste configuratia din `db.properties`.
+- `Repository<T, ID>` defineste operatiile generice `save`, `findById`, `findAll`, `update`, `delete`.
+- Repository-uri concrete: `CustomerRepository`, `AudiCarRepository`, `SalesAgentRepository`, `OrderRepository`.
+- Toate interogarile JDBC folosesc `PreparedStatement` si `try-with-resources`.
+- `OrderRepository.saveAndMarkVehicleSold` executa o tranzactie explicita: insereaza comanda si marcheaza masina ca indisponibila, cu `commit`/`rollback`.
+- Interogari cu `JOIN`: comenzile cu detalii client/masina/agent, comenzile unui client, comenzile finalizate si numarul de comenzi per agent.
+- `AuditService` este Singleton thread-safe si scrie actiunile in `audit.csv` in modul append.
